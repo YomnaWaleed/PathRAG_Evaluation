@@ -4,6 +4,10 @@ import asyncio
 import networkx as nx
 from typing import List, Tuple, Dict
 from google.generativeai import embed_content
+import sys, os
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 from config.settings import EMBEDDING_MODEL, GEMINIT_API_KEY
 
 
