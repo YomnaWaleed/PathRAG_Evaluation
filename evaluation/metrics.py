@@ -7,29 +7,40 @@ import numpy as np
 
 class EvaluationMetrics:
     @staticmethod
-    def recall_at_k(retrieved_ids: List[str], relevant_ids: List[str], k: int) -> float:
-        """Calculate Recall@K"""
-        if not relevant_ids:
+    def recall_at_k(
+        retrieved_chunks: List[Dict], relevant_chunks: List[Dict], k: int
+    ) -> float:
+        """Calculate Recall@K based on content similarity"""
+        if not relevant_chunks:
             return 0.0
 
-        retrieved_at_k = set(retrieved_ids[:k])
-        relevant_set = set(relevant_ids)
+        # Take top-K retrieved chunks
+        retrieved_at_k = retrieved_chunks[:k]
 
-        if not relevant_set:
-            return 0.0
+        # Make a set of relevant content strings
+        relevant_set = set(chunk.get("content", "") for chunk in relevant_chunks)
 
-        return len(retrieved_at_k.intersection(relevant_set)) / len(relevant_set)
+        # Count matches
+        matches = 0
+        for chunk in retrieved_at_k:
+            chunk_content = chunk.get("content", "")
+            for relevant_text in relevant_set:
+                if relevant_text.lower() in chunk_content.lower():
+                    matches += 1
+                    break
+
+        return matches / len(relevant_set) if relevant_set else 0.0
 
     @staticmethod
     def precision_at_k(
-        retrieved_ids: List[str], relevant_ids: List[str], k: int
+        retrieved_chunks: List[Dict], relevant_chunks: List[Dict], k: int
     ) -> float:
-        """Calculate Precision@K"""
-        if not retrieved_ids:
+        """Calculate Precision@K based on chunk_ids"""
+        if not retrieved_chunks:
             return 0.0
 
-        retrieved_at_k = set(retrieved_ids[:k])
-        relevant_set = set(relevant_ids)
+        retrieved_at_k = set(chunk.get("chunk_id") for chunk in retrieved_chunks[:k])
+        relevant_set = set(chunk.get("chunk_id") for chunk in relevant_chunks)
 
         if not retrieved_at_k:
             return 0.0

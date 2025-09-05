@@ -1,0 +1,100 @@
+{
+  "single_hop": {
+    "recall_at_k": {
+      "recall@1": 0.0,
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "recall@10": 0.0
+    },
+    "precision_at_k": {
+      "precision@1": 0.0,
+      "precision@3": 0.0,
+      "precision@5": 0.0,
+      "precision@10": 0.0
+    },
+    "groundedness_scores": [
+      0.8,
+      0.8
+    ],
+    "hallucination_rates": [
+      0.1,
+      0.1
+    ],
+    "query_details": [
+      {
+        "query": "What is AUTOSAR ECU State Manager?",
+        "retrieved_ids": [],
+        "relevant_ids": [
+          "chunk_0",
+          "chunk_1",
+          "chunk_5"
+        ],
+        "groundedness": 0.8,
+        "hallucination_rate": 0.1
+      },
+      {
+        "query": "What are the key processes in Automotive SPICE?",
+        "retrieved_ids": [],
+        "relevant_ids": [
+          "chunk_10",
+          "chunk_11",
+          "chunk_15"
+        ],
+        "groundedness": 0.8,
+        "hallucination_rate": 0.1
+      }
+    ],
+    "avg_groundedness": 0.8,
+    "avg_hallucination_rate": 0.1
+  },
+  "multi_hop": {
+    "recall_at_k": {
+      "recall@1": 0.0,
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "recall@10": 0.0
+    },
+    "precision_at_k": {
+      "precision@1": 0.0,
+      "precision@3": 0.0,
+      "precision@5": 0.0,
+      "precision@10": 0.0
+    },
+    "groundedness_scores": [
+      0.8,
+      0.8
+    ],
+    "hallucination_rates": [
+      0.1,
+      0.1
+    ],
+    "query_details": [
+      {
+        "query": "How does AUTOSAR ECU State Manager relate to Automotive SPICE processes?",
+        "retrieved_ids": [],
+        "relevant_ids": [
+          "chunk_1",
+          "chunk_5",
+          "chunk_10",
+          "chunk_15"
+        ],
+        "groundedness": 0.8,
+        "hallucination_rate": 0.1
+      },
+      {
+        "query": "What assessment methods are recommended for both AUTOSAR and Automotive SPICE?",
+        "retrieved_ids": [],
+        "relevant_ids": [
+          "chunk_3",
+          "chunk_7",
+          "chunk_12",
+          "chunk_18"
+        ],
+        "groundedness": 0.8,
+        "hallucination_rate": 0.1
+      }
+    ],
+    "avg_groundedness": 0.8,
+    "avg_hallucination_rate": 0.1
+  }
+}

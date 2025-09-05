@@ -4,11 +4,13 @@ import asyncio
 import networkx as nx
 from typing import List, Tuple, Dict
 from google.generativeai import embed_content
+import google.generativeai as genai
+from config.settings import LLM_MODEL
 import sys, os
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from config.settings import EMBEDDING_MODEL, GEMINIT_API_KEY
+from config.settings import EMBEDDING_MODEL, GOOGLE_API_KEY
 
 
 class MultiHopSimulator:
@@ -17,9 +19,59 @@ class MultiHopSimulator:
         self.graph = nx.DiGraph()
         self.entity_embeddings = {}
 
+    async def perform_reasoning(
+        self,
+        query_entities: List[str],
+        relevant_chunks: Dict[str, List[Dict]],
+        max_hops: int,
+    ) -> List[Dict]:
+        """
+        Perform multi-hop reasoning over the graph and relevant chunks.
+        For now: just collect top chunks for each query entity up to max_hops.
+        """
+        results = []
+        try:
+            for hop in range(max_hops):
+                for entity in query_entities:
+                    if entity in relevant_chunks:
+                        for chunk in relevant_chunks[entity]:
+                            results.append(
+                                {
+                                    "hop": hop + 1,
+                                    "entity": entity,
+                                    "content": chunk.get("content", ""),
+                                    "doc": chunk.get("doc_name", "unknown"),
+                                    "score": chunk.get("score", 0),
+                                }
+                            )
+            return results
+        except Exception as e:
+            print(f"[Error in perform_reasoning]: {e}")
+            return []
+
     async def extract_entities(self, text: str) -> List[str]:
-        """Extract entities from text using Gemini"""
-        pass
+        """Extract entities from text using Gemini LLM"""
+        prompt = f"""
+        Extract the main entities (technical terms, standards, processes, tools, or concepts)
+        from the following text. 
+        Return them as a comma-separated list only, without explanations.
+
+        Text: {text}
+        """
+
+        try:
+            model = genai.GenerativeModel(model_name=LLM_MODEL)
+            response = model.generate_content(prompt)
+
+            # Gemini output as plain text
+            entities_text = response.text.strip()
+
+            # Split by comma and clean
+            entities = [e.strip() for e in entities_text.split(",") if e.strip()]
+            return entities if entities else []
+        except Exception as e:
+            print(f"[Error in extract_entities]: {e}")
+            return []
 
     async def get_embedding(self, text: str) -> List[float]:
         """Get embedding for text using Gemini"""
@@ -28,11 +80,31 @@ class MultiHopSimulator:
         )
         return result["embedding"]
 
-    def build_entity_graph(self):
+    async def build_entity_graph(self):
         """Build a graph of entities and their relationships"""
-        # Extract entities from all documents
-        # Create nodes for entities and edges for relationships
-        pass
+        try:
+            for doc_id, text in self.documents.items():
+                entities = await self.extract_entities(text)
+
+                for ent in entities:
+                    if ent not in self.graph:
+                        self.graph.add_node(ent, doc_id=doc_id)
+
+                for i in range(len(entities)):
+                    for j in range(i + 1, len(entities)):
+                        e1, e2 = entities[i], entities[j]
+
+                        if self.graph.has_edge(e1, e2):
+                            self.graph[e1][e2]["weight"] += 1
+                        else:
+                            self.graph.add_edge(e1, e2, weight=1)
+
+            print(
+                f" Entity graph built with {len(self.graph.nodes)} nodes and {len(self.graph.edges)} edges."
+            )
+
+        except Exception as e:
+            print(f"[Error in build_entity_graph]: {e}")
 
     async def simulate_multi_hop(self, query: str, max_hops: int = 3) -> List[Dict]:
         """Simulate multi-hop query processing"""

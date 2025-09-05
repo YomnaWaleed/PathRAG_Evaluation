@@ -36,7 +36,7 @@ def chunk_text(text: str, chunk_size: int = 1000, overlap: int = 200) -> List[Di
                 "content": chunk,
                 "start_index": i,
                 "end_index": i + len(chunk.split()),
-                "chunk_id": f"chunk_{i}",
+                "chunk_id": f"chunk_{len(chunks)}",  # Use sequential numbering
             }
         )
 
