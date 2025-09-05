@@ -19,18 +19,30 @@ This project implements a sophisticated evaluation harness for assessing the per
 
 ## Architecture
 
-PathRAG_Evaluation/
-├── config/
+PathRAG_Evaluation
+
+├── config
+
 │ └── settings.py # Configuration and API settings
-├── evaluation/
+
+├── evaluation
+
 │ ├── metrics.py # Evaluation metrics implementation
+
 │ ├── multi_hop_simulator.py # Multi-hop reasoning engine
+
 │ └── test_cases.py # Test queries and ground truth
-├── utils/
+
+├── utils
+
 │ ├── data_loader.py # PDF processing and chunking
+
 │ └── visualization.py # Results visualization
+
 ├── data/ # PDF documents directory
+
 ├── results/ # Evaluation results storage
+
 └── main.py # Main evaluation script
 
 ## Evaluation Metrics
